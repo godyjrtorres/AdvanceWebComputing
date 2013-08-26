@@ -1,0 +1,404 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Bulok na Kamatis</title>
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+		<link rel="stylesheet" type="text/css" href="MSE_elements.css">
+		<link rel="stylesheet" type="text/css" href="MSE_ids.css">
+		<link rel="stylesheet" type="text/css" href="MSE_classes.css">
+	</head>
+
+	<body>
+		<script src="jquery.js"></script>
+		<script>
+		$(function(){
+	$('body').append(
+		'<div style="position: absolute; top: 71px;">' +
+			'<div id="main">' +
+				'<nav id="main_nav">' +
+					'<form id="search_box" class="box" onSubmit="return false;">' +
+						'<h4>Search Box</h4>' +
+						'<input type="text" id="search_input" maxlength="50" placeholder="Type movie title here">' +
+					'</form>' +
+					'<section id="top_ten" class="box">' +
+						'<h4>Top 10</h4>' +
+						'<ol id="top_ten_list">' +
+							
+						'</ol>' +
+					'</section>' +
+					'<section id="latest" class="box">' +
+						'<h4>Latest</h4>' +
+						'<ol id="latest_list">' +
+							
+						'</ol>' +
+					'</section>' +
+				'</nav>' +
+				'<section id="main_section">' +
+					'<div id="selected_result" class="box">' +
+						'<div id="selected_result_panel">' +
+							
+						'</div>' +
+					'</div>' +
+					'<div id="results">' +
+						'<div id="results_menu">' +
+							'View by <span id="view_type"> title </span> in <span id="view_order"> ascending </span> order' +
+						'</div>' +
+						'<div id="results_panel" class="box">' +
+							'<div id="results_inner_panel">' +
+								'<ul id="first_column">' +
+									
+								'</ul>' +
+								'<ul id="second_column">' +
+									
+								'</ul>' +
+							'</div>' +
+							'<p id="default">' +
+								'RESULTS OF<br>' +
+								'SEARCH WILL<br>' +
+								'GO HERE' +
+							'</p>' +
+						'</div>' +
+					'</div>' +
+				'</section>' +
+			'</div>' +
+			'<div style="height: 35px;"></div>' +
+		'</div>' +
+		'<header id="main_header"><h1>BULOK NA KAMATIS</h1></header>' +
+		'<footer id="main_footer">&copy; Straw Hat 2013, C.A.Villaran &amp; G.V.Torres Jr.</footer>'
+	);
+	
+	$.ajax({
+		url: 'http://api.rottentomatoes.com/api/public/v1.0/lists/movies/box_office.json',
+		dataType: 'jsonp',
+		data: {
+			apiKey: 'p94x5pk5qgemuwh2k6xaha83'
+		},
+		success: showTopTen
+	});
+	
+	$.ajax({
+		url: 'http://api.rottentomatoes.com/api/public/v1.0/lists/movies/opening.json',
+		dataType: 'jsonp',
+		data: {
+			apiKey: 'p94x5pk5qgemuwh2k6xaha83'
+		},
+		success: showLatest
+	});
+	
+	$('#search_input').keypress	(function(E){
+		if (E.which == 13){
+			$.ajax({
+				url: 'http://api.rottentomatoes.com/api/public/v1.0/movies.json',
+				dataType: 'jsonp',
+				data: {
+					q:$('#search_input').val(),
+					apiKey: 'p94x5pk5qgemuwh2k6xaha83'
+				},
+				success: showMovies
+			});
+			$('#search_input').val('');
+		}
+	});
+	
+	function showLatest(response){
+		console.log('response',response);
+		var latest = response.movies;
+		for(var x = 0 ; x < 10 ; x++){
+			var tags = '<li>' +
+						'<h5 class="on_click"><a href="#">' + latest[x].title + '</a></h5>' +
+						'Rating: ';
+						
+			var number_of_stars = '';
+			for(var s = 0 ; s < parseInt(star_rating(latest[x].ratings.audience_score)) ; s++){
+				tags += '<img src="yellow_star.jpg" style="inline">';
+				number_of_stars++;
+			}
+			
+			number_of_stars += parseInt(5 - star_rating(latest[x].ratings.audience_score))
+			if(5 - number_of_stars == 1){
+				if(star_rating(latest[x].ratings.audience_score) - parseInt(5 - star_rating(latest[x].ratings.audience_score)) > 0.25){
+					tags += '<img src="half_star.jpg" style="inline">';
+				}
+				else{
+					tags += '<img src="black_star.jpg" style="inline">';
+				}
+			}
+
+			for(var s = 0 ; s < parseInt(5 - star_rating(latest[x].ratings.audience_score)) ; s++){
+				tags += '<img src="black_star.jpg" style="inline">';
+			}
+			
+			tags += '<span style="display: none;">' + latest[x].release_dates.theater + '</span>' +
+					'<span style="display: none;">' + latest[x].posters.original + '</span>' +
+					'<span style="display: none;">' + star_rating(latest[x].ratings.audience_score) + '</span>' +
+					'<span style="display: none;">' + latest[x].synopsis + '</span>' +
+					'</li>';
+			
+			$('#latest_list').append(tags);
+			
+			$('.on_click').click(
+				function(){
+					$('#selected_result_panel').empty();
+					$('#selected_result_panel').css('display','none');
+					var infoslash = this.parentNode.childNodes;
+					
+					$('#selected_result_panel').append(
+						'<img src="' + infoslash[8].textContent + '" id="selected_movie_poster">' +
+						'<div id="selected_movie_panel">' +
+							'<div id="selected_movie_info">' +
+								'<h3 id="selected_movie_header">' + infoslash[0].textContent + '</h3>' +
+								'Date: ' + infoslash[7].textContent + '<br>' +
+								infoslash[1].textContent +
+							'</div>' +
+						'</div>'
+					);
+					
+					var tags = '';
+					
+					var number_of_stars = '';
+					for(var s = 0 ; s < parseInt(infoslash[9].textContent) ; s++){
+						tags += '<img src="yellow_star.jpg" style="inline">';
+						number_of_stars++;
+					}
+					
+					number_of_stars += parseInt(5 - infoslash[9].textContent)
+					if(5 - number_of_stars == 1){
+						if(infoslash[9].textContent - parseInt(5 - infoslash[9].textContent) > 0.25){
+							tags += '<img src="half_star.jpg" style="inline">';
+						}
+						else{
+							tags += '<img src="black_star.jpg" style="inline">';
+						}
+					}
+
+					for(var s = 0 ; s < parseInt(5 - infoslash[9].textContent) ; s++){
+						tags += '<img src="black_star.jpg" style="inline">';
+					}
+					
+					$('#selected_movie_info').append(tags);
+					
+					if(infoslash[10].textContent != ''){
+						$('#selected_movie_panel').append(
+							'<p id="selected_synopsis">' + infoslash[10].textContent + '</p>'
+						);
+					}
+					else{
+						$('#selected_movie_panel').append(
+							'<p id="default">No Synopsis <br> Available</p>'
+						)
+					}
+					
+					$('#selected_result_panel').fadeIn();
+					$('#selected_result').slideDown();
+					$('#selected_result_panel').css('display','-webkit-flex');
+				}
+			);
+		}
+	}
+	
+	function showTopTen(response){
+		console.log('response',response);
+		var top_ten = response.movies;
+		for(var x = 0 ; x < 10 ; x++){
+			$('#top_ten_list').append(
+				'<li>' +
+					'<h5 class="on_clicker"><a href="#">' + top_ten[x].title + '</a></h5>' +
+					'Date: ' + top_ten[x].release_dates.theater +
+					'<span style="display: none;">' + top_ten[x].posters.original + '</span>' +
+					'<span style="display: none;">' + star_rating(top_ten[x].ratings.audience_score) + '</span>' +
+					'<p style="display: none;">' + top_ten[x].synopsis + '</p>' +
+				'</li>'
+			);
+			
+			$('.on_clicker').click(
+				function(){
+					$('#selected_result_panel').empty();
+					$('#selected_result_panel').css('display','none');
+					var infos = this.parentNode.childNodes;
+					
+					$('#selected_result_panel').append(
+						'<img src="' + infos[2].textContent + '" id="selected_movie_poster">' +
+						'<div id="selected_movie_panel">' +
+							'<div id="selected_movie_info">' +
+								'<h3 id="selected_movie_header">' + infos[0].textContent + '</h3>' +
+								infos[1].textContent + '<br>' +
+								'Ratings: ' +
+							'</div>' +
+						'</div>'
+					);
+					
+					var tags = '';
+					
+					var number_of_stars = '';
+					for(var s = 0 ; s < parseInt(infos[3].textContent) ; s++){
+						tags += '<img src="yellow_star.jpg" style="inline">';
+						number_of_stars++;
+					}
+					
+					number_of_stars += parseInt(5 - infos[3].textContent)
+					if(5 - number_of_stars == 1){
+						if(infos[3].textContent - parseInt(5 - infos[3].textContent) > 0.25){
+							tags += '<img src="half_star.jpg" style="inline">';
+						}
+						else{
+							tags += '<img src="black_star.jpg" style="inline">';
+						}
+					}
+
+					for(var s = 0 ; s < parseInt(5 - infos[3].textContent) ; s++){
+						tags += '<img src="black_star.jpg" style="inline">';
+					}
+					
+					$('#selected_movie_info').append(tags);
+					
+					if(infos[4].textContent != ''){
+						$('#selected_movie_panel').append(
+							'<p id="selected_synopsis">' + infos[4].textContent + '</p>'
+						);
+					}
+					else{
+						$('#selected_movie_panel').append(
+							'<p id="default">No Synopsis <br> Available</p>'
+						)
+					}
+					
+					$('#selected_result_panel').fadeIn();
+					$('#selected_result').slideDown();
+					$('#selected_result_panel').css('display','-webkit-flex');
+				}
+			);
+		}
+	}
+	
+	function star_rating(rating){
+		return rating / 20;
+	}
+	
+	function showMovies(response){
+		console.log('response', response);
+		$('.result_box').remove();
+		$('#default').fadeOut();
+		
+		var counter = 0;
+		var movies = response.movies;
+		if(movies.length%2 != 0){
+			counter = ((movies.length - 1) / 2) + 1;
+		}
+		else{
+			counter = movies.length / 2;
+		}
+		for (var i = 0; i < movies.length; i++) {
+			var tags = '<li class="result_box">' +
+							'<img src="' + movies[i].posters.thumbnail + '" class="movie_thumbnail"/>' +
+							'<div class="info">' +
+								'<h5>' + movies[i].title + '</h5>' +
+								'Date: ' + movies[i].release_dates.theater + '<br>' +
+								'Rating: ';
+			
+			var number_of_stars = '';
+
+			for(var s = 0 ; s < parseInt(star_rating(movies[i].ratings.audience_score)) ; s++){
+				tags += '<img src="yellow_star.jpg" style="inline">';
+				number_of_stars++;
+			}
+			
+			number_of_stars += parseInt(5 - star_rating(movies[i].ratings.audience_score))
+			if(5 - number_of_stars == 1){
+				if(star_rating(movies[i].ratings.audience_score) - parseInt(5 - star_rating(movies[i].ratings.audience_score)) > 0.25){
+					tags += '<img src="half_star.jpg" style="inline">';
+				}
+				else{
+					tags += '<img src="black_star.jpg" style="inline">';
+				}
+			}
+
+			for(var s = 0 ; s < parseInt(5 - star_rating(movies[i].ratings.audience_score)) ; s++){
+				tags += '<img src="black_star.jpg" style="inline">';
+			}
+			
+			tags += '<br>Synopsis: ';
+			
+			if(movies[i].synopsis == ''){
+				tags += 'Not available</div>';
+			}
+			else{
+				tags += 'Available</div>';
+			}
+			
+			tags += '<span class="poster">' + movies[i].posters.original + '</span>' +
+					'<span class="stars">' + star_rating(movies[i].ratings.audience_score) + '</span>' +
+					'<p class="synopsis">' + movies[i].synopsis + '</p></li>';
+			
+			if(counter != 0){
+				 $('#first_column').append(tags);
+				counter--;
+			}
+			else{
+				 $('#second_column').append(tags);
+			}
+			
+			$('.result_box').click(
+				function(){
+					$('#selected_result_panel').empty();
+					$('#selected_result_panel').css('display','none');
+					var info = this.childNodes[1].childNodes;
+					var tags = '';
+					
+					$('#selected_result_panel').append(
+						'<img src="' + this.childNodes[2].textContent + '" id="selected_movie_poster">' +
+						'<div id="selected_movie_panel"></div>'
+					)
+
+					tags += '<div id="selected_movie_info">' +
+							'<h3 id="selected_movie_header">' + info[0].textContent + '</h3>' +
+							info[1].textContent + '<br>' +
+							info[3].textContent;
+					
+					var number_of_stars = '';
+					for(var s = 0 ; s < parseInt(this.childNodes[3].textContent) ; s++){
+						tags += '<img src="yellow_star.jpg" style="inline">';
+						number_of_stars++;
+					}
+					
+					number_of_stars += parseInt(5 - this.childNodes[3].textContent)
+					if(5 - number_of_stars == 1){
+						if(this.childNodes[3].textContent - parseInt(5 - this.childNodes[3].textContent) > 0.25){
+							tags += '<img src="half_star.jpg" style="inline">';
+						}
+						else{
+							tags += '<img src="black_star.jpg" style="inline">';
+						}
+					}
+
+					for(var s = 0 ; s < parseInt(5 - this.childNodes[3].textContent) ; s++){
+						tags += '<img src="black_star.jpg" style="inline">';
+					}
+					
+					if(info[10].textContent == "Synopsis: Available"){
+						tags += '</div><p id="selected_synopsis">' + this.childNodes[4].textContent + '</p>';
+					}
+					else{
+						tags += '</div><p id="default">No Synopsis <br> Available</p>';
+					}
+					
+					$('#selected_movie_panel').append(tags);
+					
+					$('#selected_result_panel').fadeIn();
+					$('#selected_result').slideDown();
+					$('#selected_result_panel').css('display','-webkit-flex');
+				}
+			);
+		};
+		
+		$('.synopsis').css('display','none');
+		$('.poster').css('display','none');
+		$('.stars').css('display','none');
+		$('#results_inner_panel').fadeIn();
+		$('#results_inner_panel').css('display','-webkit-flex');
+	}
+});
+		</script>
+		<script src="js/bootstrap.js"></script>
+	</body>
+</html>

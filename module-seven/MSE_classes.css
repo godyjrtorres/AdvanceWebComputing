@@ -1,0 +1,36 @@
+.box{
+	background: #FFFACD;
+	border: 3px solid black;
+	border-radius: 12px;
+	box-shadow: 7px 7px 15px rgba(0,0,0,0.7);
+	margin: 10px 10px 20px 10px;
+	padding: 10px;
+}
+
+.movie_thumbnail{
+	border-top: 3px solid gray;
+	border-right: 3px solid white;
+	border-bottom: 3px solid white;
+	border-left: 3px solid gray;
+	margin-right: 10px;
+	max-height: 90px;
+	max-width: 60px;
+	min-height: 90px;
+	min-width: 60px;
+}
+
+.result_box{
+	background: #87CEFF;
+	border: 2px solid black;
+	padding: 10px;
+	margin-bottom: 20px;
+	-webkit-transition: box-shadow 0.5s, -webkit-transform 0.5s;
+}
+
+.result_box:hover{
+	box-shadow: 0px 7px 14px rgba(0,0,0,0.4),
+				7px 0px 14px rgba(0,0,0,0.4),
+				0px -7px 14px rgba(0,0,0,0.4),
+				-7px 0px 14px rgba(0,0,0,0.4);
+	-webkit-transform: scale(1.02, 1.02);
+}

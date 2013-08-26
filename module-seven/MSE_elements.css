@@ -1,0 +1,58 @@
+header, nav, section, footer, aside{
+	display: block;
+}
+
+a, a:hover{
+	text-decoration: none;
+}
+
+li a{
+	color: #8B2500;
+}
+
+li a:hover{
+	color: #EEAD0E;
+}
+
+
+body{
+	background: url(bg.jpg);
+	background-size: 100%;
+}
+
+#main_header h1{
+	margin: 0px;
+}
+
+nav{
+	width: 265px;
+}
+
+h4{
+	color: #B0171F;
+	font-family: Tempus Sans ITC;
+	font-size: 25px;
+	text-align: center;
+	text-shadow: 2px 2px 5px rgba(0,0,0,0.35);
+}
+
+h5{
+	color: #8B2500;
+	font-family: Tempus Sans ITC;
+	font-size: 110%;
+	margin: 0px;
+}
+
+ol li{
+	margin-bottom: 10px;
+}
+
+ul li{
+	display: -webkit-flex;
+	list-style: none;
+	width: 400px;
+}
+
+ul{
+	margin: 0px;
+}

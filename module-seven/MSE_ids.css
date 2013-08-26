@@ -1,0 +1,137 @@
+#results_inner_panel{
+	display: none;
+}
+
+#default{
+	color: gray;
+	font-size: 40px;
+	line-height: 150%;
+	position: relative;
+	text-align: center;
+	top: 25px;
+	width: 100%;
+}
+
+#selected_movie_panel  #default{
+	top: 40px;
+}
+
+#first_column{
+	margin-right: 20px;
+}
+
+#main_footer:hover, #main_header:hover{
+	background: rgba(176,226,255,1);
+}
+
+#main{
+	display: -webkit-flex;
+	height: 100%;
+	left: 5%;
+	padding: 10px;
+	position: relative;
+}
+
+#main_footer{
+	background: rgba(176,226,255,0.5);
+	border-top: 1px solid rgba(0,0,0,0.3);
+	bottom: 0px;
+	box-shadow: 0px -2px 5px rgba(0,0,0,0.7),
+				inset 0px 1px rgba(255,255,255,0.5),
+				inset 0px 10px rgba(255,255,255,0.4),
+				inset 0px 10px 30px rgba(255,255,255,0.4),
+				inset 0px -15px 30px rgba(0,0,0,0.4);
+	left: 0px;
+	padding: 10px;
+	position: fixed;
+	text-align: center;
+	text-shadow: 1px 1px 1px white;
+	width:100%;
+	-webkit-transition: background 1s;
+}
+
+#main_header{
+	background: rgba(176,226,255,0.5);
+	border-bottom: 1px solid rgba(0,0,0,0.3);
+	box-shadow: 0px 2px 5px rgba(0,0,0,0.7),
+				inset 0px -1px rgba(255,255,255,0.5),
+				inset 0px -10px rgba(255,255,255,0.4),
+				inset 0px -10px 30px rgba(255,255,255,0.4),
+				inset 0px 15px 30px rgba(0,0,0,.4);
+	color: #CD3700;
+	font-family: Jokerman;
+	left: 0px;
+	padding: 15px 0px;
+	position: fixed;
+	text-align: center;
+	top: 0px;
+	width:100%;
+	-webkit-transition: background 1s;
+}
+
+#main_section{
+	width: 935px;
+}
+
+#results_menu{
+	background: rgb(176,226,255);
+	border-bottom: 1px solid rgba(0,0,0,0.3);
+	box-shadow: inset 0px -1px rgba(255,255,255,0.5),
+				inset 0px -7px rgba(255,255,255,0.4),
+				inset 0px -10px 30px rgba(255,255,255,0.4),
+				inset 0px 5px 10px rgba(0,0,0,0.35),
+				7px 7px 15px rgba(0,0,0,0.7);
+	font-size: 20px;
+	margin: 10px 10px 0px 10px;
+	padding: 10px;
+}
+
+#results_panel{
+	border-top: none;
+	border-radius: 0px 0px 12px 12px;
+	box-shadow: 7px 7px 15px rgba(0,0,0,0.7),
+				inset 0px 2px 5px rgba(0,0,0,0.7);
+	margin-top: 0px;
+	min-height: 250px;
+	padding: 20px 20px 0px 20px;
+}
+
+#selected_result{
+	border-radius: 12px 12px 0px 0px;
+	display: none;
+	font-size: 17px;
+	line-height: 140%;
+	padding: 20px;
+}
+
+#selected_movie_header{
+	color: #B0171F;
+	font-family: Colonna MT;
+	font-size: 200%;
+	margin: 0px;
+}
+
+#selected_movie_panel{
+	-webkit-flex: 1;
+}
+
+#selected_movie_poster{
+	border-top: 5px solid gray;
+	border-right: 5px solid white;
+	border-bottom: 5px solid white;
+	border-left: 5px solid gray;
+	margin-right: 20px;
+	max-height: 300px;
+	max-width: 300px;
+	min-height: 300px;
+	min-width: 300px;
+}
+
+#selected_synopsis{
+	margin-top: 10px;
+	text-indent: 15px;
+}
+
+#top_ten_list, #latest_list{
+	margin: 10px 10px 10px 35px;
+}
