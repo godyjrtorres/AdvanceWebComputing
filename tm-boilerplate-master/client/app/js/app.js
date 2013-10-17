@@ -13,13 +13,13 @@ $(function() {
             $('.btn-logout').attr('href','/api/logout?url=/');
 
             this.router = new Router();
-            this.setEventListeners();
+            this.setEventListeners('');
             this.getUser();
 
             Backbone.history.start({pushState: true});
         },
 
-        setEventListeners: function() {
+        setEventListeners: function(id) {
             var self = this;
             $('.menu-crud .item a').click(function(ev) {
                 var $el = $(ev.target).closest('.item');
@@ -42,7 +42,21 @@ $(function() {
             });
             $('.form-search').unbind('submit').submit(function(ev) {
                 self.router.navigate('search?=' + $('.search-input').val(), {trigger: true});
+                $('.search-input').val('');
                 return false;
+            });
+            $('.btn-cancel').click(function(e) {
+                e.preventDefault();
+                self.router.navigate('list', {trigger: true});
+            });
+            $('.btn-edit').click(function() {
+                self.router.navigate('edit-' + id, {trigger: true});
+            });
+            $('.btn-view').click(function() {
+                self.router.navigate('thesis-' + id, {trigger: true});
+            });
+            $('.btn-delete').click(function() {
+                self.router.navigate('delete-' + id, {trigger: true});
             });
         },
 
@@ -76,12 +90,9 @@ $(function() {
            $('.btn-login').addClass('hidden');
            $('.menu-user').removeClass('hidden');
         },
-        showHome: function() {
-            $('.app-content').html('');
-        },
         showList: function() {
-            var $listTemplate = getTemplate('tpl-thesis-list');
-            $('.app-content').html($listTemplate);
+            clearPage();
+            setTemplate('tpl-thesis-list', '.app-content');
         },
         search: function(query, callback) {
             $.get('/api/search/?q=' + query, {
@@ -97,17 +108,18 @@ $(function() {
             });
         },
         showThesis: function(thesis) {
-            var self = this;
-            var $viewTemplate = getTemplate('tpl-thesis-detail', thesis);
-            $('.app-content').html($viewTemplate);
+            clearPage();
+            setTemplate('tpl-thesis-detail', '.app-content', thesis);
         },
         showForm: function(object) {
             var self = this;
             if (!object) {
                 object = {};
             }
-            var $formTemplate = getTemplate('tpl-thesis-form', object);
-            $('.app-content').html($formTemplate);
+
+            clearPage();
+            setTemplate('tpl-thesis-form', '.app-content', object);
+
             $('form').unbind('submit').submit(function(ev) {
                 var thesisObject = {};
                 var inputs = $('form').serializeArray();
@@ -117,7 +129,7 @@ $(function() {
                 self.save(thesisObject);
                 return false;
             });
-            self.setEventListeners();
+            self.setEventListeners('');
         },
         loadAllThesis: function() {
             var self = this;
@@ -131,21 +143,12 @@ $(function() {
             var self = this;
             // iterate thru the list to display each item
             _.each(list, function(item) {
-                var $thesisItem = $(getTemplate('tpl-thesis-list-item', item));
+                setTemplate('tpl-thesis-list-item', '.thesis-list', item);
                 var id = item.Id
                 if (item.Key) {
                     id = item.Key;
                 }
-                $thesisItem.find('.btn-edit').click(function() {
-                    self.router.navigate('edit-' + id, {trigger: true});
-                });
-                $thesisItem.find('.btn-view').click(function() {
-                    self.router.navigate('thesis-' + id, {trigger: true});
-                });
-                $thesisItem.find('.btn-delete').click(function() {
-                    self.router.navigate('delete-' + id, {trigger: true});
-                });
-                $('.thesis-list').append($thesisItem);
+                self.setEventListeners(id);
             });
 
             // add event handlers for the edit button
@@ -179,40 +182,33 @@ $(function() {
                     alert('The thesis you are looking for is not existing in our database');
                }
                else{
-                    var $listTemplate = getTemplate('tpl-thesis-list');
-                    $('.app-content').html($listTemplate);
+                    clearPage();
+                    setTemplate('tpl-thesis-list', '.app-content');
                     _.each(sorted_list, function(item) {
-                        var $thesisItem = $(getTemplate('tpl-thesis-list-item', item));
-                        $('.thesis-list').append($thesisItem);
+                        setTemplate('tpl-thesis-list-item', '.thesis-list', item);
                         var id = item.Id
                         if (item.Key) {
                             id = item.Key;
                         }
-                        $thesisItem.find('.btn-edit').click(function() {
-                            self.router.navigate('edit-' + id, {trigger: true});
-                        });
-                        $thesisItem.find('.btn-view').click(function() {
-                            self.router.navigate('thesis-' + id, {trigger: true});
-                        });
-                        $thesisItem.find('.btn-delete').click(function() {
-                            self.router.navigate('delete-' + id, {trigger: true});
-                        });
+                        self.setEventListeners(id);
                     });
                }
-               $('.search-input').val('');
             });
         }
 
 
     };
 
-    function getTemplate(template_id, context) {
+    function setTemplate(template_id, location, context) {
         var template, $template, markup;
         template = $('#' + template_id);
         $template = Handlebars.compile(template.html());
         markup = $template(context);
-        return markup;
+        $(location).append(markup);
+    }
 
+    function clearPage(){
+        $('.app-content').html('');
     }
 
 
@@ -228,13 +224,13 @@ $(function() {
         },
 
        onHome: function() {
-            app.showHome();
+            clearPage();
        },
        onSearch: function(query) {
             app.searchThesis(query);
        },
        onView: function(id) {
-           console.log('thesis id', id);
+            console.log('thesis id', id);
             app.getThesisByID(id, function(item) {
                 app.showThesis(item);
                 FB.XFBML.parse();
